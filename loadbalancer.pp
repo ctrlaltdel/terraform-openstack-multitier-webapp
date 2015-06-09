@@ -1,4 +1,23 @@
 class { 'haproxy': }
+
+#
+# Stats
+#
+haproxy::listen { 'stats':
+  collect_exported => false,
+  ipaddress        => '0.0.0.0',
+  ports            => '9000',
+  options          => {
+    'mode'          => 'http',
+    'stats'         => 'enable',
+    'stats uri'     => '/',
+    'stats refresh' => '1s',
+  },
+}
+
+#
+# Main frontend
+#
 haproxy::listen { 'http':
   collect_exported => false,
   ipaddress        => '0.0.0.0',
