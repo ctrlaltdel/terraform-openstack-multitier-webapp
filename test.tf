@@ -1,42 +1,50 @@
+# Configure the OpenStack Provider
+provider "openstack" {
+    user_name   = "XXX"
+    tenant_name = "XXX"
+    password    = "XXX"
+    auth_url    = "XXX"
+}
+
 resource "openstack_compute_keypair_v2" "keypair1" {
     name = "tf-keypair-1"
     public_key = "${file("id_rsa.pub")}"
 }
-
-/*
-resource "openstack_compute_secgroup_v2" "secgroup_1" {
-  name = "my_secgroup"
-  description = "my security group"
-  rule {
-    ip_protocol = "tcp"
-    from_port = "-1"
-    to_port = "-1"
-    cidr = "0.0.0.0/0"
-  }
-}
-*/
 
 #
 # Network
 #
 
 #
-# Create a Network
+# Frontend network
 #
 resource "openstack_networking_network_v2" "tf_network" {
-    region = ""
-    name = "tf_network"
+    name = "frontend"
     admin_state_up = "true"
 }
  
-#
-# Create a subnet in our new network
-# Notice here we use a TF variable for the name of our network above.
-#
 resource "openstack_networking_subnet_v2" "tf_net_sub1" {
     region = ""
     network_id = "${openstack_networking_network_v2.tf_network.id}"
     cidr = "192.168.0.0/24"
+    ip_version = 4
+    dns_nameservers = [
+      "8.8.8.8",
+      "8.8.4.4"
+    ]
+}
+
+#
+# Backend network
+#
+resource "openstack_networking_network_v2" "backend_network" {
+    name = "backend"
+    admin_state_up = "true"
+}
+ 
+resource "openstack_networking_subnet_v2" "backend_sub1" {
+    network_id = "${openstack_networking_network_v2.backend_network.id}"
+    cidr = "192.168.1.0/24"
     ip_version = 4
     dns_nameservers = [
       "8.8.8.8",
@@ -55,7 +63,7 @@ resource "openstack_networking_router_v2" "tf_router1" {
 }
  
 #
-# Attach the Router to our Network via an Interface
+# Attach the Router to our Networks via an Interface
 #
 resource "openstack_networking_router_interface_v2" "tf_rtr_if_1" {
     region = ""
@@ -63,9 +71,40 @@ resource "openstack_networking_router_interface_v2" "tf_rtr_if_1" {
     subnet_id = "${openstack_networking_subnet_v2.tf_net_sub1.id}"
 }
 
+resource "openstack_networking_router_interface_v2" "tf_rtr_if_2" {
+    region = ""
+    router_id = "${openstack_networking_router_v2.tf_router1.id}"
+    subnet_id = "${openstack_networking_subnet_v2.backend_sub1.id}"
+}
+
+
 #
 # Load-balancer
 #
+
+resource "openstack_compute_secgroup_v2" "lb_secgroup" {
+  name = "lb_secgroup"
+  description = "Load balancer security group"
+  rule {
+    ip_protocol = "tcp"
+    from_port = "22"
+    to_port = "22"
+    cidr = "0.0.0.0/0"
+  }
+  rule {
+    ip_protocol = "tcp"
+    from_port = "80"
+    to_port = "80"
+    cidr = "0.0.0.0/0"
+  }
+  rule {
+    ip_protocol = "tcp"
+    from_port = "9000"
+    to_port = "9000"
+    cidr = "0.0.0.0/0"
+  }
+
+}
 
 resource "openstack_compute_floatingip_v2" "load-balancer" {
   pool = "public"
@@ -81,7 +120,7 @@ resource "openstack_compute_instance_v2" "load-balancer" {
   image_name = "ubuntu-1404-latest"
   flavor_name = "m1.small"
   key_pair = "tf-keypair-1"
-  security_groups = ["all"]
+  security_groups = ["lb_secgroup"]
 
   network {
     uuid = "${openstack_networking_network_v2.tf_network.id}"
@@ -132,17 +171,31 @@ variable "instance_ips" {
   }
 }
 
+resource "openstack_compute_secgroup_v2" "app_secgroup" {
+  name = "app_secgroup"
+  description = "Application servers security group"
+  rule {
+    ip_protocol = "tcp"
+    from_port = "80"
+    to_port = "80"
+    cidr = "0.0.0.0/0"
+  }
+}
+
 resource "openstack_compute_instance_v2" "app" {
   name = "app"
   image_name = "ubuntu-1504-latest"
   flavor_name = "m1.tiny"
   key_pair = "tf-keypair-1"
-  security_groups = ["all"]
+  security_groups = ["app_secgroup"]
 
-
-  network {
+  network = {
     uuid = "${openstack_networking_network_v2.tf_network.id}"
     fixed_ip_v4 = "${lookup(var.instance_ips, count.index)}"
+  }
+
+  network = {
+    uuid = "${openstack_networking_network_v2.backend_network.id}"
   }
 
   user_data = "#!/bin/sh\napt-get -q update\napt-get -qyy install apache2\necho 'App server #${count.index}' > /var/www/html/index.html"
@@ -150,3 +203,31 @@ resource "openstack_compute_instance_v2" "app" {
   count = 5
 }
 
+#
+# Database
+#
+
+resource "openstack_compute_secgroup_v2" "db_secgroup" {
+  name = "db_secgroup"
+  description = "Database servers security group"
+  rule {
+    ip_protocol = "tcp"
+    from_port = "3306"
+    to_port = "3306"
+    cidr = "0.0.0.0/0"
+  }
+}
+
+resource "openstack_compute_instance_v2" "db" {
+  name = "db"
+  image_name = "ubuntu-1504-latest"
+  flavor_name = "m1.tiny"
+  key_pair = "tf-keypair-1"
+  security_groups = ["db_secgroup"]
+
+  network = {
+    uuid = "${openstack_networking_network_v2.backend_network.id}"
+  }
+
+  user_data = "#!/bin/sh\napt-get -q update\napt-get -qyy install mysql"
+}
