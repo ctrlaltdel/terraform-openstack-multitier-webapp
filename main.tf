@@ -198,7 +198,7 @@ resource "openstack_compute_instance_v2" "app" {
     uuid = "${openstack_networking_network_v2.backend_network.id}"
   }
 
-  user_data = "#!/bin/sh\napt-get -q update\napt-get -qyy install apache2\necho 'App server #${count.index+1}' > /var/www/html/index.html"
+  user_data = "#!/bin/sh\napt-get -q update\napt-get -qyy install apache2\necho 'App server #${count.index+1}' $(cat /etc/issue.net) > /var/www/html/index.html"
 
   count = 5
 }
