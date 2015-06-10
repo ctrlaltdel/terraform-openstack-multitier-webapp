@@ -59,7 +59,7 @@ resource "openstack_networking_router_v2" "tf_router1" {
     region = ""
     name = "tf_router1"
     admin_state_up = "true"
-    external_gateway = "b052d4e5-295f-47aa-b400-63c8ae15d1d9"
+    external_gateway = "XXXXX"
 }
  
 #
