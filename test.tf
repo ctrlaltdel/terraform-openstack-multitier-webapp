@@ -184,7 +184,7 @@ resource "openstack_compute_secgroup_v2" "app_secgroup" {
 
 resource "openstack_compute_instance_v2" "app" {
   name = "app"
-  image_name = "ubuntu-1504-latest"
+  image_name = "ubuntu-1404-latest"
   flavor_name = "m1.tiny"
   key_pair = "tf-keypair-1"
   security_groups = ["app_secgroup"]
