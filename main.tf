@@ -1,3 +1,15 @@
+variable "lb_image" {
+  default = "ubuntu-1404-latest"
+}
+
+variable "app_image" {
+  default = "ubuntu-1404-latest"
+}
+
+variable "db_image" {
+  default = "ubuntu-1404-latest"
+}
+
 # Configure the OpenStack Provider
 provider "openstack" {
     user_name   = "XXX"
@@ -117,7 +129,7 @@ output "address" {
 
 resource "openstack_compute_instance_v2" "load-balancer" {
   name = "load-balancer"
-  image_name = "ubuntu-1404-latest"
+  image_name = "${var.lb_image}"
   flavor_name = "m1.small"
   key_pair = "tf-keypair-1"
   security_groups = ["lb_secgroup"]
@@ -184,7 +196,7 @@ resource "openstack_compute_secgroup_v2" "app_secgroup" {
 
 resource "openstack_compute_instance_v2" "app" {
   name = "app"
-  image_name = "ubuntu-1404-latest"
+  image_name = "${var.app_image}"
   flavor_name = "m1.tiny"
   key_pair = "tf-keypair-1"
   security_groups = ["app_secgroup"]
@@ -220,7 +232,7 @@ resource "openstack_compute_secgroup_v2" "db_secgroup" {
 
 resource "openstack_compute_instance_v2" "db" {
   name = "db"
-  image_name = "ubuntu-1504-latest"
+  image_name = "${var.db_image}"
   flavor_name = "m1.tiny"
   key_pair = "tf-keypair-1"
   security_groups = ["db_secgroup"]
