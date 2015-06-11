@@ -123,8 +123,14 @@ resource "openstack_compute_floatingip_v2" "load-balancer" {
   depends_on = ["openstack_networking_router_interface_v2.tf_rtr_if_1"]
 }
 
-output "address" {
-  value = "${openstack_compute_floatingip_v2.load-balancer.address}"
+output {
+  "website" {
+    value = "http://${openstack_compute_floatingip_v2.load-balancer.address}"
+  }
+
+  "haproxy stats" {
+    value = "http://${openstack_compute_floatingip_v2.load-balancer.address}:9000"
+  }
 }
 
 resource "openstack_compute_instance_v2" "load-balancer" {
