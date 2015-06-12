@@ -129,7 +129,7 @@ output {
   }
 
   "haproxy stats" {
-    value = "http://${openstack_compute_floatingip_v2.load-balancer.address}:9000"
+    value = "http://${openstack_compute_floatingip_v2.load-balancer.address}:9000/;up"
   }
 }
 
