@@ -239,7 +239,7 @@ resource "openstack_compute_secgroup_v2" "db_secgroup" {
 resource "openstack_compute_instance_v2" "db" {
   name = "db"
   image_name = "${var.db_image}"
-  flavor_name = "m1.tiny"
+  flavor_id = 1
   key_pair = "tf-keypair-1"
   security_groups = ["db_secgroup"]
 
