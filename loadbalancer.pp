@@ -29,7 +29,7 @@ haproxy::listen { 'http':
 
 haproxy::balancermember { 'backend00':
   listening_service => 'http',
-  server_names      => 'master00.example.com',
+  server_names      => 'app00',
   ipaddresses       => '192.168.0.200',
   ports             => '80',
   options           => 'check',
@@ -37,7 +37,7 @@ haproxy::balancermember { 'backend00':
 
 haproxy::balancermember { 'backend01':
   listening_service => 'http',
-  server_names      => 'master01.example.com',
+  server_names      => 'app01',
   ipaddresses       => '192.168.0.201',
   ports             => '80',
   options           => 'check',
@@ -45,7 +45,7 @@ haproxy::balancermember { 'backend01':
 
 haproxy::balancermember { 'backend02':
   listening_service => 'http',
-  server_names      => 'master02.example.com',
+  server_names      => 'app02',
   ipaddresses       => '192.168.0.202',
   ports             => '80',
   options           => 'check',
@@ -53,7 +53,7 @@ haproxy::balancermember { 'backend02':
 
 haproxy::balancermember { 'backend03':
   listening_service => 'http',
-  server_names      => 'master03.example.com',
+  server_names      => 'app03',
   ipaddresses       => '192.168.0.203',
   ports             => '80',
   options           => 'check',
@@ -61,7 +61,7 @@ haproxy::balancermember { 'backend03':
 
 haproxy::balancermember { 'backend04':
   listening_service => 'http',
-  server_names      => 'master04.example.com',
+  server_names      => 'app04',
   ipaddresses       => '192.168.0.204',
   ports             => '80',
   options           => 'check',
@@ -69,7 +69,7 @@ haproxy::balancermember { 'backend04':
 
 haproxy::balancermember { 'backend05':
   listening_service => 'http',
-  server_names      => 'master05.example.com',
+  server_names      => 'app05',
   ipaddresses       => '192.168.0.205',
   ports             => '80',
   options           => 'check',
@@ -77,7 +77,7 @@ haproxy::balancermember { 'backend05':
 
 haproxy::balancermember { 'backend06':
   listening_service => 'http',
-  server_names      => 'master06.example.com',
+  server_names      => 'app06',
   ipaddresses       => '192.168.0.206',
   ports             => '80',
   options           => 'check',
@@ -85,7 +85,7 @@ haproxy::balancermember { 'backend06':
 
 haproxy::balancermember { 'backend07':
   listening_service => 'http',
-  server_names      => 'master07.example.com',
+  server_names      => 'app07',
   ipaddresses       => '192.168.0.207',
   ports             => '80',
   options           => 'check',
@@ -93,7 +93,7 @@ haproxy::balancermember { 'backend07':
 
 haproxy::balancermember { 'backend08':
   listening_service => 'http',
-  server_names      => 'master08.example.com',
+  server_names      => 'app08',
   ipaddresses       => '192.168.0.208',
   ports             => '80',
   options           => 'check',
@@ -101,7 +101,7 @@ haproxy::balancermember { 'backend08':
 
 haproxy::balancermember { 'backend09':
   listening_service => 'http',
-  server_names      => 'master09.example.com',
+  server_names      => 'app09',
   ipaddresses       => '192.168.0.209',
   ports             => '80',
   options           => 'check',
@@ -109,7 +109,7 @@ haproxy::balancermember { 'backend09':
 
 haproxy::balancermember { 'backend10':
   listening_service => 'http',
-  server_names      => 'master10.example.com',
+  server_names      => 'app10',
   ipaddresses       => '192.168.0.210',
   ports             => '80',
   options           => 'check',
@@ -117,7 +117,7 @@ haproxy::balancermember { 'backend10':
 
 haproxy::balancermember { 'backend11':
   listening_service => 'http',
-  server_names      => 'master11.example.com',
+  server_names      => 'app11',
   ipaddresses       => '192.168.0.211',
   ports             => '80',
   options           => 'check',
