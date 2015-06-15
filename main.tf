@@ -191,6 +191,14 @@ resource "openstack_compute_secgroup_v2" "app_secgroup" {
   }
 }
 
+resource "template_file" "app_init" {
+  filename = "app_init.tpl"
+
+  vars {
+    id = "${count.index+1}"
+  }
+}
+
 resource "openstack_compute_instance_v2" "app" {
   name = "app"
   image_name = "ubuntu-1404-latest"
@@ -207,7 +215,7 @@ resource "openstack_compute_instance_v2" "app" {
     uuid = "${openstack_networking_network_v2.backend_network.id}"
   }
 
-  user_data = "#!/bin/sh\napt-get -q update\napt-get -qyy install apache2\necho '<img src=http://www.coolthings.com.au/sites/default/files/imagecache/product_full/the_internet_ani_lrg.gif></img><br/>App server #${count.index+1}' $(cat /etc/issue.net) > /var/www/html/index.html"
+  user_data = "${element(template_file.app_init.*.rendered, count.index)}"
 
   count = 5
 }
