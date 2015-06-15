@@ -129,7 +129,7 @@ resource "openstack_compute_instance_v2" "load-balancer" {
   image_name = "ubuntu-1404-latest"
   flavor_name = "m1.small"
   key_pair = "tf-keypair-1"
-  security_groups = ["${openstack_compute_secgroup_v2.lb_secgroup.id}"]
+  security_groups = ["lb_secgroup"]
 
   network {
     uuid = "${openstack_networking_network_v2.frontend_network.id}"
@@ -196,7 +196,7 @@ resource "openstack_compute_instance_v2" "app" {
   image_name = "ubuntu-1404-latest"
   flavor_name = "m1.tiny"
   key_pair = "tf-keypair-1"
-  security_groups = ["${openstack_compute_secgroup_v2.app_secgroup.id}"]
+  security_groups = ["app_secgroup"]
 
   network = {
     uuid = "${openstack_networking_network_v2.frontend_network.id}"
@@ -232,7 +232,7 @@ resource "openstack_compute_instance_v2" "db" {
   image_name = "ubuntu-1504-latest"
   flavor_id = 1
   key_pair = "tf-keypair-1"
-  security_groups = ["${openstack_compute_secgroup_v2.db_secgroup.id}"]
+  security_groups = ["db_secgroup"]
 
   network = {
     uuid = "${openstack_networking_network_v2.backend_network.id}"
