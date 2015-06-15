@@ -23,7 +23,7 @@ resource "openstack_networking_network_v2" "frontend_network" {
     admin_state_up = "true"
 }
  
-resource "openstack_networking_subnet_v2" "tf_net_sub1" {
+resource "openstack_networking_subnet_v2" "frontend_sub1" {
     region = ""
     network_id = "${openstack_networking_network_v2.frontend_network.id}"
     cidr = "192.168.0.0/24"
@@ -71,7 +71,7 @@ resource "openstack_networking_router_v2" "tf_router1" {
 resource "openstack_networking_router_interface_v2" "tf_rtr_if_1" {
     region = ""
     router_id = "${openstack_networking_router_v2.tf_router1.id}"
-    subnet_id = "${openstack_networking_subnet_v2.tf_net_sub1.id}"
+    subnet_id = "${openstack_networking_subnet_v2.frontend_sub1.id}"
 }
 
 resource "openstack_networking_router_interface_v2" "tf_rtr_if_2" {
