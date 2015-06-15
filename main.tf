@@ -18,14 +18,14 @@ resource "openstack_compute_keypair_v2" "keypair1" {
 #
 # Frontend network
 #
-resource "openstack_networking_network_v2" "tf_network" {
+resource "openstack_networking_network_v2" "frontend_network" {
     name = "frontend"
     admin_state_up = "true"
 }
  
 resource "openstack_networking_subnet_v2" "tf_net_sub1" {
     region = ""
-    network_id = "${openstack_networking_network_v2.tf_network.id}"
+    network_id = "${openstack_networking_network_v2.frontend_network.id}"
     cidr = "192.168.0.0/24"
     ip_version = 4
     dns_nameservers = [
@@ -40,6 +40,9 @@ resource "openstack_networking_subnet_v2" "tf_net_sub1" {
 resource "openstack_networking_network_v2" "backend_network" {
     name = "backend"
     admin_state_up = "true"
+    # Cosmetics only: display the frontend network on the left in
+    # horizon's network topology view
+    depends_on = ["openstack_networking_network_v2.frontend_network"]
 }
  
 resource "openstack_networking_subnet_v2" "backend_sub1" {
@@ -129,7 +132,7 @@ resource "openstack_compute_instance_v2" "load-balancer" {
   security_groups = ["lb_secgroup"]
 
   network {
-    uuid = "${openstack_networking_network_v2.tf_network.id}"
+    uuid = "${openstack_networking_network_v2.frontend_network.id}"
     fixed_ip_v4 = "192.168.0.100"
   }
 
@@ -196,7 +199,7 @@ resource "openstack_compute_instance_v2" "app" {
   security_groups = ["app_secgroup"]
 
   network = {
-    uuid = "${openstack_networking_network_v2.tf_network.id}"
+    uuid = "${openstack_networking_network_v2.frontend_network.id}"
     fixed_ip_v4 = "${lookup(var.instance_ips, count.index)}"
   }
 
